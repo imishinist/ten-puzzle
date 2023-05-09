@@ -125,7 +125,8 @@ let solve lst =
       | None -> false
       | Some n -> Rational.(/=) n (10, 1))
 
-let () =
+
+let main () =
   let input = Scanf.sscanf (read_line ()) "%d %d %d %d" (fun a b c d -> [a; b; c; d]) in
   let ans1 = solve input in
   let ans2 = lazy (perm input |>
@@ -133,6 +134,29 @@ let () =
                  | [] -> None
                  | ans -> Some ans) |>
                List.flatten) in
-  match ans1 with
-  | [] -> print_answers (Lazy.force ans2)
-  | _ -> print_answers ans1
+  let ans = match ans1 with
+    | [] -> Lazy.force ans2
+    | _ -> ans1 in
+  match ans with
+    | [] -> print_endline "no answer"
+    | _ -> print_answers ans
+
+let all_combination () =
+  let all () =
+    let* a = List.init 10 (fun i -> i) in
+    let* b = List.init (10 - a) (fun i -> i + a) in
+    let* c = List.init (10 - b) (fun i -> i + b) in
+    let* d = List.init (10 - c) (fun i -> i + c) in
+    [[a; b; c; d]] in
+  let ok = List.map (fun input ->
+    perm input |>
+    List.filter_map (fun e -> match solve e with
+      | [] -> None
+      | ans -> Some ans) |>
+    List.flatten) (all ()) |>
+  List.filter (fun e -> (List.length e) != 0) in
+  let len = List.length ok in
+  print_endline (string_of_int len);;
+
+(* all_combination () *)
+main ()

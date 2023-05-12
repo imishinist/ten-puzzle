@@ -64,10 +64,10 @@ let string_of_op = function
 let operators = [Plus; Minus; Mul; Div]
 
 (* expressions *)
-type expr = Num of Rational.t option | BinOp of op * expr * expr
+type expr = Num of int | BinOp of op * expr * expr
 
 let expressions a op1 b op2 c op3 d =
-  let s a = Num (Some a) in
+  let s a = Num a in
   BinOp(op3, BinOp (op2, BinOp(op1, s a, s b), s c), s d) ::
   BinOp(op3, BinOp (op1, s a, BinOp(op2, s b, s c)), s d) ::
   BinOp(op2, BinOp (op1, s a, s b), BinOp(op3, s c, s d)) ::
@@ -75,9 +75,7 @@ let expressions a op1 b op2 c op3 d =
   BinOp(op1, s a, BinOp (op2, s b, BinOp(op3, s c, s d))) :: []
 
 let rec string_of_expr = function
-  | Num n -> (match n with
-              | Some n -> Rational.string_of_rational n
-              | None -> "(none)")
+  | Num n -> string_of_int n
   | BinOp (op, l, r) ->
      Printf.sprintf "(%s %s %s)"
        (string_of_expr l) (string_of_op op) (string_of_expr r)
@@ -95,7 +93,7 @@ let rec perm lst = match lst with
      List.flatten (List.map (insert h) (perm t))
 
 let rec eval = function
-  | Num n -> n
+  | Num n -> Some (Rational.init n 1)
   | BinOp (op, l,  r) -> op_func (op) (eval l) (eval r)
 
 let rec print_answers = function
@@ -115,7 +113,6 @@ let extract lst =
   (a, b, c, d)
 
 let solve lst =
-  let lst = List.map (fun e -> Rational.init e 1) lst in
   let (a, b, c, d) = extract lst in
   let* op1 = operators in
   let* op2 = operators in

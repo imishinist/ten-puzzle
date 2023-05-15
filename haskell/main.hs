@@ -9,7 +9,7 @@ main = do
   case xs of
     [a, b, c, d] -> do
       let ans1 = solve a b c d
-      let ans2 = [ ans | [a, b, c, d] <- permutations [a, b, c, d], ans <- solve a b c d ]
+      let ans2 = [ ans | [a', b', c', d'] <- permutations [a, b, c, d], ans <- solve a' b' c' d' ]
       let ans = if null ans1 then ans2 else ans1
       mapM_ print $ ans
     _ -> hPutStrLn stderr "invalid input"
